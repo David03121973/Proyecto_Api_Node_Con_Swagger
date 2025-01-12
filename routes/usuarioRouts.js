@@ -16,34 +16,6 @@ const authenticate = require("../helpers/authenticate");
 
 /**
  * @swagger
- * /Usuario:
- *   get:
- *     tags: [Usuario]
- *     summary: Obtener todos los usuarios
- *     description: Devuelve una lista de todos los usuarios registrados.
- *     responses:
- *       200:
- *         description: Lista de usuarios obtenida correctamente.
- */
-router.get("/Usuario",authenticate(), usuarioController.getUsuarios);
-
-/**
- * @swagger
- * /Usuario/{id}:
- *   get:
- *     tags: [Usuario]
- *     summary: Obtener un usuario por ID
- *     description: Devuelve un usuario específico usando su ID.
- *     responses:
- *       200:
- *         description: Usuario encontrado.
- *       404:
- *         description: Usuario no encontrado.
- */
-router.get("/Usuario/:id",authenticate(), usuarioController.getUsuarioById);
-
-/**
- * @swagger
  * /Usuario/createUsuario:
  *   post:
  *     tags: [Usuario]
@@ -70,11 +42,52 @@ router.post("/Usuario/createUsuario", usuarioController.createUsuario);
 
 /**
  * @swagger
+ * /Usuario:
+ *   get:
+ *     tags: [Usuario]
+ *     summary: Obtener todos los usuarios
+ *     description: Devuelve una lista de todos los usuarios registrados.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios obtenida correctamente.
+ */
+router.get("/Usuario", authenticate(), usuarioController.getUsuarios);
+
+/**
+ * @swagger
+ * /Usuario/{id}:
+ *   get:
+ *     tags: [Usuario]
+ *     summary: Obtener un usuario por ID
+ *     description: Devuelve un usuario específico usando su ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del usuario a obtener.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado.
+ *       404:
+ *         description: Usuario no encontrado.
+ */
+router.get("/Usuario/:id", authenticate(), usuarioController.getUsuarioById);
+
+/**
+ * @swagger
  * /Usuario/updateUsuario/{id}:
  *   put:
  *     tags: [Usuario]
  *     summary: Actualizar un usuario
  *     description: Actualiza la información de un usuario específico por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -101,7 +114,7 @@ router.post("/Usuario/createUsuario", usuarioController.createUsuario);
  *       404:
  *         description: Usuario no encontrado.
  */
-router.put("/Usuario/updateUsuario/:id",authenticate(), usuarioController.updateUsuario);
+router.put("/Usuario/updateUsuario/:id", authenticate(), usuarioController.updateUsuario);
 
 /**
  * @swagger
@@ -110,6 +123,8 @@ router.put("/Usuario/updateUsuario/:id",authenticate(), usuarioController.update
  *     tags: [Usuario]
  *     summary: Eliminar un usuario
  *     description: Elimina un usuario específico por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -123,7 +138,7 @@ router.put("/Usuario/updateUsuario/:id",authenticate(), usuarioController.update
  *       404:
  *         description: Usuario no encontrado.
  */
-router.delete("/Usuario/deleteUsuario/:id",authenticate(), usuarioController.deleteUsuario);
+router.delete("/Usuario/deleteUsuario/:id", authenticate(), usuarioController.deleteUsuario);
 
 /**
  * @swagger

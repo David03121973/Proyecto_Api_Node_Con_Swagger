@@ -54,6 +54,8 @@ router.get("/venta/:id", ventaController.getVentaById);
  *     tags: [Venta]
  *     summary: Crear una nueva venta
  *     description: Crea una nueva venta con la información proporcionada.
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -82,7 +84,7 @@ router.get("/venta/:id", ventaController.getVentaById);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.post("/venta/createVenta",authenticate(), ventaController.createVenta);
+router.post("/venta/createVenta", authenticate(), ventaController.createVenta);
 
 /**
  * @swagger
@@ -91,6 +93,8 @@ router.post("/venta/createVenta",authenticate(), ventaController.createVenta);
  *     tags: [Venta]
  *     summary: Actualizar una venta
  *     description: Actualiza la información de una venta específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -128,7 +132,7 @@ router.post("/venta/createVenta",authenticate(), ventaController.createVenta);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.put("/venta/updateVenta/:id",authenticate(), ventaController.updateVenta);
+router.put("/venta/updateVenta/:id", authenticate(), ventaController.updateVenta);
 
 /**
  * @swagger
@@ -137,6 +141,8 @@ router.put("/venta/updateVenta/:id",authenticate(), ventaController.updateVenta)
  *     tags: [Venta]
  *     summary: Eliminar una venta
  *     description: Elimina una venta específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -150,7 +156,7 @@ router.put("/venta/updateVenta/:id",authenticate(), ventaController.updateVenta)
  *       404:
  *         description: Venta no encontrada.
  */
-router.delete("/venta/deleteVenta/:id",authenticate(), ventaController.deleteVenta);
+router.delete("/venta/deleteVenta/:id", authenticate(), ventaController.deleteVenta);
 
 /**
  * @swagger

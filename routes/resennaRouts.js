@@ -54,6 +54,8 @@ router.get("/resenna/:id", resennaController.getResennaById);
  *     tags: [Resenna]
  *     summary: Crear una nueva reseña
  *     description: Crea una nueva reseña con la información proporcionada.
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -75,7 +77,7 @@ router.get("/resenna/:id", resennaController.getResennaById);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.post("/resenna/CreateResenna",authenticate(), resennaController.createResenna);
+router.post("/resenna/CreateResenna", authenticate(), resennaController.createResenna);
 
 /**
  * @swagger
@@ -84,6 +86,8 @@ router.post("/resenna/CreateResenna",authenticate(), resennaController.createRes
  *     tags: [Resenna]
  *     summary: Actualizar una reseña
  *     description: Actualiza la información de una reseña específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -112,7 +116,7 @@ router.post("/resenna/CreateResenna",authenticate(), resennaController.createRes
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.put("/resenna/updateResenna/:id",authenticate(), resennaController.updateResenna);
+router.put("/resenna/updateResenna/:id", authenticate(), resennaController.updateResenna);
 
 /**
  * @swagger
@@ -121,6 +125,8 @@ router.put("/resenna/updateResenna/:id",authenticate(), resennaController.update
  *     tags: [Resenna]
  *     summary: Eliminar una reseña
  *     description: Elimina una reseña específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -134,6 +140,6 @@ router.put("/resenna/updateResenna/:id",authenticate(), resennaController.update
  *       404:
  *         description: Reseña no encontrada.
  */
-router.delete("/resenna/deleteResenna/:id",authenticate(), resennaController.deleteResenna);
+router.delete("/resenna/deleteResenna/:id", authenticate(), resennaController.deleteResenna);
 
 module.exports = router;

@@ -54,6 +54,8 @@ router.get("/carta/:id", cartaController.getCartaById);
  *     tags: [Carta]
  *     summary: Crear una nueva carta
  *     description: Crea una nueva carta con la información proporcionada.
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -79,7 +81,7 @@ router.get("/carta/:id", cartaController.getCartaById);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.post("/carta/createCarta",authenticate(), cartaController.createCarta);
+router.post("/carta/createCarta", authenticate(), cartaController.createCarta);
 
 /**
  * @swagger
@@ -88,6 +90,8 @@ router.post("/carta/createCarta",authenticate(), cartaController.createCarta);
  *     tags: [Carta]
  *     summary: Actualizar una carta
  *     description: Actualiza la información de una carta específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -122,7 +126,7 @@ router.post("/carta/createCarta",authenticate(), cartaController.createCarta);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.put("/carta/updateCarta/:id",authenticate(), cartaController.updateCarta);
+router.put("/carta/updateCarta/:id", authenticate(), cartaController.updateCarta);
 
 /**
  * @swagger
@@ -131,6 +135,8 @@ router.put("/carta/updateCarta/:id",authenticate(), cartaController.updateCarta)
  *     tags: [Carta]
  *     summary: Eliminar una carta
  *     description: Elimina una carta específica por ID.
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -144,7 +150,7 @@ router.put("/carta/updateCarta/:id",authenticate(), cartaController.updateCarta)
  *       404:
  *         description: Carta no encontrada.
  */
-router.delete("/carta/deleteCarta:id",authenticate(), cartaController.deleteCarta);
+router.delete("/carta/deleteCarta/:id", authenticate(), cartaController.deleteCarta);
 
 /**
  * @swagger

@@ -11,8 +11,17 @@ const options = {
       version: "1.0.0",
       description: "API para gestionar compras y ventas de cartas",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
-  apis: ["./routes/*.js"],  // Ruta donde Swagger buscará las definiciones de las rutas
+  apis: ["./routes/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
