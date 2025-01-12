@@ -57,14 +57,18 @@ const createUsuario = async (usuarioData) => {
 /**
  * Actualizar un usuario
  */
-const updateUsuario = async (id, usuarioData) => {
-  const usuario = await Usuario.findOne({ where: { id_usuario: id } });
-  if (usuario) {
-    await usuario.update(usuarioData);
-    // Obtener el usuario actualizado con reseñas
-    return await getUsuarioById(id);
+const updateUsuario = async (id, userData) => {
+  try {
+    const usuario = await Usuario.findOne({ where: { id_usuario: id } });
+    if (usuario) {
+      await usuario.update(userData);
+      return usuario;
+    }
+    return null;
+  } catch (error) {
+    console.log("Error en el servicio de actualizar usuario: ", error);
+    throw error;
   }
-  return null; // Si no se encuentra el usuario
 };
 
 /**
@@ -85,6 +89,15 @@ const deleteUsuario = async (id) => {
   return null; // Si no se encuentra el usuario
 };
 
+const getUsuarioByNombreUsuario = async (nombre_usuario) => {
+  try {
+      return await Usuario.findOne({ where: { nombre_usuario } });
+  } catch (error) {
+      console.log("Error al obtener el usuario por nombre de usuario:", error);
+      throw error;
+  }
+};
+
 // Exportar las funciones
 module.exports = {
   getAllUsuarios,
@@ -93,5 +106,6 @@ module.exports = {
   updateUsuario,
   deleteUsuario,
   usuarioExists,
-  emailExists
+  emailExists,
+  getUsuarioByNombreUsuario
 };

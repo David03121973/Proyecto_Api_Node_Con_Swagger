@@ -1,5 +1,3 @@
-// models/carta.js
-
 const { DataTypes } = require("sequelize");
 const sequelize = require("../helpers/database.js");
 
@@ -10,32 +8,32 @@ const Carta = sequelize.define("carta", {
         primaryKey: true,
     },
     nombre: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT(255),
         allowNull: false,
     },
     tipo: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT(255),
         allowNull: false,
     },
     descripcion: {
-        type: DataTypes.STRING,
-        allowNull: true, // Puede ser nulo
+        type: DataTypes.TEXT(255),
+        allowNull: true,
     },
     raza: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT(255),
         allowNull: false,
     },
     arquetipo: {
-        type: DataTypes.STRING,
-        allowNull: true, // Puede ser nulo
+        type: DataTypes.TEXT(255),
+        allowNull: true,
     },
     imagen: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT(255),
         allowNull: false,
     },
 }, {
-    timestamps: true, // Agrega columnas createdAt y updatedAt
-    paranoid: true,  // Agrega la columna deletedAt
+    timestamps: true,
+    paranoid: true,
 });
 
 module.exports = Carta;

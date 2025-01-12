@@ -5,6 +5,7 @@ const router = express.Router();
 // Etiqueta taks
 // Importar controlador de usuario
 const usuarioController = require("../controllers/usuarioController");
+const authenticate = require("../helpers/authenticate");
 
 /**
  * @swagger
@@ -24,7 +25,7 @@ const usuarioController = require("../controllers/usuarioController");
  *       200:
  *         description: Lista de usuarios obtenida correctamente.
  */
-router.get("/Usuario", usuarioController.getUsuarios);
+router.get("/Usuario",authenticate(), usuarioController.getUsuarios);
 
 /**
  * @swagger
@@ -39,7 +40,7 @@ router.get("/Usuario", usuarioController.getUsuarios);
  *       404:
  *         description: Usuario no encontrado.
  */
-router.get("/Usuario/:id", usuarioController.getUsuarioById);
+router.get("/Usuario/:id",authenticate(), usuarioController.getUsuarioById);
 
 /**
  * @swagger
@@ -100,7 +101,7 @@ router.post("/Usuario/createUsuario", usuarioController.createUsuario);
  *       404:
  *         description: Usuario no encontrado.
  */
-router.put("/Usuario/updateUsuario/:id", usuarioController.updateUsuario);
+router.put("/Usuario/updateUsuario/:id",authenticate(), usuarioController.updateUsuario);
 
 /**
  * @swagger
@@ -122,6 +123,34 @@ router.put("/Usuario/updateUsuario/:id", usuarioController.updateUsuario);
  *       404:
  *         description: Usuario no encontrado.
  */
-router.delete("/Usuario/deleteUsuario/:id", usuarioController.deleteUsuario);
+router.delete("/Usuario/deleteUsuario/:id",authenticate(), usuarioController.deleteUsuario);
+
+/**
+ * @swagger
+ * /Usuario/login:
+ *   post:
+ *     tags: [Usuario]
+ *     summary: Iniciar sesión
+ *     description: Inicia sesión con un usuario y contraseña.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre_usuario:
+ *                 type: string
+ *               contrasenna:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sesión iniciada correctamente.
+ *       401:
+ *         description: Contraseña incorrecta.
+ *       404:
+ *         description: Usuario no encontrado.
+ */
+router.post("/Usuario/login", usuarioController.login);
 
 module.exports = router;

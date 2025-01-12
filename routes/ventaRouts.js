@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const ventaController = require("../controllers/ventaController");
+const authenticate = require("../helpers/authenticate");
 
 /**
  * @swagger
@@ -72,13 +73,16 @@ router.get("/venta/:id", ventaController.getVentaById);
  *               fecha_venta:
  *                 type: string
  *                 format: date-time
+ *               estado:
+ *                 type: string
+ *                 description: Estado de la venta (ej. "pendiente", "completada", "cancelada")
  *     responses:
  *       201:
  *         description: Venta creada exitosamente.
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.post("/venta/createVenta", ventaController.createVenta);
+router.post("/venta/createVenta",authenticate(), ventaController.createVenta);
 
 /**
  * @swagger
@@ -113,6 +117,9 @@ router.post("/venta/createVenta", ventaController.createVenta);
  *               fecha_venta:
  *                 type: string
  *                 format: date-time
+ *               estado:
+ *                 type: string
+ *                 description: Estado de la venta (ej. "pendiente", "completada", "cancelada")
  *     responses:
  *       200:
  *         description: Venta actualizada exitosamente.
@@ -121,7 +128,7 @@ router.post("/venta/createVenta", ventaController.createVenta);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.put("/venta/updateVenta/:id", ventaController.updateVenta);
+router.put("/venta/updateVenta/:id",authenticate(), ventaController.updateVenta);
 
 /**
  * @swagger
@@ -143,6 +150,60 @@ router.put("/venta/updateVenta/:id", ventaController.updateVenta);
  *       404:
  *         description: Venta no encontrada.
  */
-router.delete("/venta/deleteVenta/:id", ventaController.deleteVenta);
+router.delete("/venta/deleteVenta/:id",authenticate(), ventaController.deleteVenta);
+
+/**
+ * @swagger
+ * /venta/getVentasByCarta/{id}:
+ *   get:
+ *     tags: [Venta]
+ *     summary: Obtener todas las ventas por ID de carta con comprador null y ordenadas
+ *     description: Devuelve una lista de todas las ventas asociadas a una carta específica con comprador null y ordenadas de menor a mayor por precio de venta.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la carta para obtener las ventas.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de ventas obtenida correctamente.
+ *       400:
+ *         description: ID de la carta inválido.
+ *       500:
+ *         description: Error al obtener las ventas.
+ */
+router.get("/venta/getVentasByCarta/:id", ventaController.getVentasByCartaId);
+
+/**
+ * @swagger
+ * /venta/getComprasByCarta/{id}:
+ *   get:
+ *     tags: [Venta]
+ *     summary: Obtener todas las compras por ID de carta
+ *     description: Devuelve una lista de todas las ventas asociadas a una carta específica con comprador, es decir, ventas donde el id_usuario_comprador no sea null.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la carta para obtener las ventas.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de ventas obtenida correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Venta'
+ *       400:
+ *         description: ID de la carta inválido.
+ *       500:
+ *         description: Error al obtener las ventas.
+ */
+router.get("/venta/getComprasByCarta/:id", ventaController.getComprasByCartaId);
 
 module.exports = router;

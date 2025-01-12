@@ -37,19 +37,16 @@ const getVentaById = async (req, res) => {
     }
 };
 
-/**
- * Crear una nueva venta
- */
 const createVenta = async (req, res) => {
-    const { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta } = req.body; // Obtener los datos de la venta desde el cuerpo de la solicitud
+    const { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta, estado } = req.body;
 
     // Validar campos
-    if (!id_carta || !id_usuario_vendedor || !precio_venta) {
-        return res.status(400).json({ message: "Los campos id_carta, id_usuario_vendedor y precio_venta son obligatorios." });
+    if (!id_carta || !id_usuario_vendedor || !precio_venta || !estado) {
+        return res.status(400).json({ message: "Los campos id_carta, id_usuario_vendedor, precio_venta y estado son obligatorios." });
     }
 
     try {
-        const ventaData = { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta }; // Preparar los datos para la creación
+        const ventaData = { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta, estado };
         const newVenta = await ventaService.createVenta(ventaData);
         return res.status(201).json(newVenta);
     } catch (error) {
@@ -57,35 +54,30 @@ const createVenta = async (req, res) => {
     }
 };
 
-/**
- * Actualizar una venta
- */
 const updateVenta = async (req, res) => {
-    const { id } = req.params; // Obtener el ID de la venta desde los parámetros
-    const { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta } = req.body; // Obtener los datos a actualizar desde el cuerpo de la solicitud
+    const { id } = req.params;
+    const { id_carta, id_usuario_vendedor, id_usuario_comprador, precio_venta, fecha_venta, estado } = req.body;
 
     // Validar campos
-    if (!id_carta && !id_usuario_vendedor && !precio_venta) {
+    if (!id_carta && !id_usuario_vendedor && !precio_venta && !estado) {
         return res.status(400).json({ message: "Se debe proporcionar al menos un campo para actualizar." });
     }
 
     try {
-        // Obtener la venta existente
         const venta = await ventaService.getVentaById(id);
         if (!venta) {
             return res.status(404).json({ message: "Venta no encontrada" });
         }
 
-        // Preparar los datos para la actualización
         const updatedVentaData = {
-            id_carta: id_carta || venta.id_carta, // Mantener el valor anterior si no se proporciona uno nuevo
+            id_carta: id_carta || venta.id_carta,
             id_usuario_vendedor: id_usuario_vendedor || venta.id_usuario_vendedor,
             id_usuario_comprador: id_usuario_comprador || venta.id_usuario_comprador,
             precio_venta: precio_venta || venta.precio_venta,
             fecha_venta: fecha_venta || venta.fecha_venta,
+            estado: estado || venta.estado,
         };
 
-        // Actualizar la venta
         const updatedVenta = await ventaService.updateVenta(id, updatedVentaData);
         return res.status(200).json(updatedVenta);
     } catch (error) {
@@ -111,11 +103,64 @@ const deleteVenta = async (req, res) => {
         return res.status(500).json({ message: "Error al eliminar la venta", error });
     }
 };
+/**
+ * Obtener todas las ventas por ID de carta
+ */
+const getVentasByCartaId = async (req, res) => {
+    const { id } = req.params; // Obtener el ID de la carta desde los parámetros
+  
+    // Validar que el ID sea un número
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "El ID de la carta debe ser un número." });
+    }
+  
+    try {
+      const ventas = await ventaService.getVentasByCartaId(id);
+  
+      // Verificar si hay ventas
+      if (!ventas || ventas.length === 0) {
+        return res.status(200).json([]); // Retornar un array vacío si no hay ventas
+      }
+  
+      return res.status(200).json(ventas);
+    } catch (error) {
+      console.error("Error al obtener las ventas por ID de carta:", error);
+      return res.status(500).json({ message: "Error al obtener las ventas", error });
+    }
+  };
+
+  /**
+ * Obtener todas las compras por ID de carta
+ */
+  const getComprasByCartaId = async (req, res) => {
+    const { id } = req.params; // Obtener el ID de la carta desde los parámetros
+  
+    // Validar que el ID sea un número
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "El ID de la carta debe ser un número." });
+    }
+  
+    try {
+      const ventas = await ventaService.getComprasByCartaId(id);
+  
+      // Verificar si hay ventas
+      if (!ventas || ventas.length === 0) {
+        return res.status(200).json([]); // Retornar un array vacío si no hay ventas
+      }
+  
+      return res.status(200).json(ventas);
+    } catch (error) {
+      console.error("Error al obtener las compras por ID de carta:", error);
+      return res.status(500).json({ message: "Error al obtener las compras", error });
+    }
+  };
 
 module.exports = {
     getVentas,
     getVentaById,
     createVenta,
     updateVenta,
-    deleteVenta
+    deleteVenta,
+    getVentasByCartaId,
+    getComprasByCartaId
 };

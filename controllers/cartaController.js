@@ -58,6 +58,22 @@ const createCarta = async (req, res) => {
 };
 
 /**
+ * Obtener cartas con paginación
+ */
+const getCartasWithPagination = async (req, res) => {
+    const page = parseInt(req.params.page) || 1; // Obtener el número de página desde los parámetros de la URL
+    const limit = parseInt(req.params.limit) || 10; // Obtener el límite de resultados desde los parámetros de la URL
+
+    try {
+        const { cartas, totalCartas, totalPages } = await cartaService.getCartasWithPagination(page, limit);
+        return res.status(200).json({ cartas, totalCartas, totalPages });
+    } catch (error) {
+        console.error("Error al obtener las cartas con paginación:", error);
+        return res.status(500).json({ message: "Error al obtener las cartas", error });
+    }
+};
+
+/**
  * Actualizar una carta
  */
 const updateCarta = async (req, res) => {
@@ -113,10 +129,71 @@ const deleteCarta = async (req, res) => {
     }
 };
 
+const getCartasFilteredWithPagination = async (req, res) => {
+    const page = parseInt(req.params.page) || 1; // Obtener el número de página desde los parámetros de la URL
+    const limit = parseInt(req.params.limit) || 10; // Obtener el límite de resultados desde los parámetros de la URL
+    const { nombre, tipo, arquetipo } = req.body; // Obtener los filtros desde el cuerpo de la solicitud
+  
+    try {
+      const filters = {};
+      if (nombre) filters.nombre = nombre; // Aplicar filtro por nombre si está presente
+      if (tipo) filters.tipo = tipo; // Aplicar filtro por tipo si está presente
+      if (arquetipo) filters.arquetipo = arquetipo; // Aplicar filtro por arquetipo si está presente
+  
+      const { cartas, totalCartas, totalPages } = await cartaService.getCartasFilteredWithPagination(
+        page,
+        limit,
+        filters
+      );
+  
+      return res.status(200).json({ cartas, totalCartas, totalPages });
+    } catch (error) {
+      console.error("Error al obtener las cartas filtradas con paginación:", error);
+      return res.status(500).json({ message: "Error al obtener las cartas", error });
+    }
+  };
+
+  const getCartasAleatorias = async (req, res) => {
+    const { cantidad, arquetipo } = req.params;
+  
+    // Validar campos
+    if (!cantidad || !arquetipo) {
+      return res.status(400).json({
+        message: "Los campos 'cantidad' y 'arquetipo' son obligatorios.",
+      });
+    }
+  
+    if (isNaN(cantidad) || cantidad <= 0) {
+      return res.status(400).json({
+        message: "El campo 'cantidad' debe ser un número entero positivo.",
+      });
+    }
+  
+    if (typeof arquetipo !== "string" || arquetipo.trim() === "") {
+      return res.status(400).json({
+        message: "El campo 'arquetipo' debe ser una cadena de texto no vacía.",
+      });
+    }
+  
+    try {
+      const cartasAleatorias = await cartaService.getCartasAleatorias(cantidad, arquetipo);
+      return res.status(200).json(cartasAleatorias);
+    } catch (error) {
+      console.error("Error al obtener las cartas aleatorias:", error);
+      return res.status(500).json({
+        message: "Error al obtener las cartas aleatorias",
+        error,
+      });
+    }
+  };
+
 module.exports = {
     getCartas,
     getCartaById,
     updateCarta,
     deleteCarta,
-    createCarta
+    createCarta,
+    getCartasWithPagination,
+    getCartasFilteredWithPagination,
+    getCartasAleatorias
 };

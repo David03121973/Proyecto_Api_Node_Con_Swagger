@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const resennaController = require("../controllers/resennaController");
+const authenticate = require("../helpers/authenticate");
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ router.get("/resenna/:id", resennaController.getResennaById);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.post("/resenna/CreateResenna", resennaController.createResenna);
+router.post("/resenna/CreateResenna",authenticate(), resennaController.createResenna);
 
 /**
  * @swagger
@@ -111,7 +112,7 @@ router.post("/resenna/CreateResenna", resennaController.createResenna);
  *       400:
  *         description: Datos de entrada inválidos.
  */
-router.put("/resenna/updateResenna/:id", resennaController.updateResenna);
+router.put("/resenna/updateResenna/:id",authenticate(), resennaController.updateResenna);
 
 /**
  * @swagger
@@ -133,6 +134,6 @@ router.put("/resenna/updateResenna/:id", resennaController.updateResenna);
  *       404:
  *         description: Reseña no encontrada.
  */
-router.delete("/resenna/deleteResenna/:id", resennaController.deleteResenna);
+router.delete("/resenna/deleteResenna/:id",authenticate(), resennaController.deleteResenna);
 
 module.exports = router;

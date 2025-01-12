@@ -65,31 +65,25 @@ const getVentaById = async (id) => {
     }
 };
 
-/**
- * Crear una nueva venta
- */
 const createVenta = async (ventaData) => {
     try {
-        return await Venta.create(ventaData); // Crea una nueva venta
+        return await Venta.create(ventaData); // Ya maneja el campo `estado` si se pasa en `ventaData`
     } catch (error) {
         console.log("Error en el servicio de crear venta: ", error);
-        throw error; // Lanza el error para que el controlador pueda manejarlo
+        throw error;
     }
 };
 
-/**
- * Actualizar una venta
- */
 const updateVenta = async (id, ventaData) => {
     try {
         const venta = await Venta.findOne({ where: { id_venta: id } });
         if (venta) {
-            return await venta.update(ventaData); // Actualiza la venta si se encuentra
+            return await venta.update(ventaData); // Ya maneja el campo `estado` si se pasa en `ventaData`
         }
-        return null; // Si no se encuentra la venta
+        return null;
     } catch (error) {
         console.log("Error en el servicio de actualizar venta: ", error);
-        throw error; // Lanza el error para que el controlador pueda manejarlo
+        throw error;
     }
 };
 
@@ -108,11 +102,86 @@ const deleteVenta = async (id) => {
         throw error; // Lanza el error para que el controlador pueda manejarlo
     }
 };
+/**
+ * Obtener todas las ventas por ID de carta
+ */
+const getVentasByCartaId = async (id_carta) => {
+    try {
+      return await Venta.findAll({
+        where: {
+          id_carta,
+          id_usuario_comprador: null, // Agregar condición para obtener ventas con comprador null
+        },
+        order: [['precio_venta', 'ASC']], // Ordenar por precio de venta de menor a mayor
+        include: [
+          {
+            model: Carta,
+            as: 'carta',
+            required: true
+          },
+          {
+            model: Usuario,
+            as: 'vendedor',
+            required: true
+          },
+          {
+            model: Usuario,
+            as: 'comprador',
+            required: false
+          }
+        ]
+      });
+    } catch (error) {
+      console.log("Error en los servicios de getVentasByCartaId: ", error);
+      throw error;
+    }
+  };
 
+  /**
+ * Obtener todas las compras por ID de carta
+ */
+  const { Op } = require('sequelize'); // Asegúrate de importar Op desde sequelize
+
+  const getComprasByCartaId = async (id_carta) => {
+    try {
+      return await Venta.findAll({
+        where: {
+          id_carta,
+          id_usuario_comprador: {
+            [Op.ne]: null // Cambiar la condición para obtener ventas donde id_usuario_comprador no sea null
+          }
+        },
+        order: [['fecha_venta', 'ASC']], // Ordenar por precio de venta de menor a mayor
+        include: [
+          {
+            model: Carta,
+            as: 'carta',
+            required: true
+          },
+          {
+            model: Usuario,
+            as: 'vendedor',
+            required: true
+          },
+          {
+            model: Usuario,
+            as: 'comprador',
+            required: false
+          }
+        ]
+      });
+    } catch (error) {
+      console.log("Error en los servicios de getComprasByCartaId: ", error);
+      throw error;
+    }
+  };
+  
 module.exports = {
     getAllVentas,
     getVentaById,
     createVenta,
     updateVenta,
     deleteVenta,
+    getVentasByCartaId,
+    getComprasByCartaId
 };

@@ -45,6 +45,11 @@ const Venta = sequelize.define("venta", {
             min: 0.01, // Mínimo valor de venta
         },
     },
+    estado: {
+        type: DataTypes.TEXT, // Nuevo campo
+        allowNull: false,
+        defaultValue: "bueno", // Valor por defecto
+    },
     fecha_venta: {
         type: DataTypes.DATE,
         allowNull: true, // Puede ser nulo si aún no se concreta la venta
@@ -55,8 +60,8 @@ const Venta = sequelize.define("venta", {
 });
 
 // Definir las asociaciones
-Venta.belongsTo(Carta, { foreignKey: 'id_carta', as: "carta" }); // Una venta pertenece a una carta
-Venta.belongsTo(Usuario, { foreignKey: 'id_usuario_vendedor', as: 'vendedor' }); // Una venta pertenece a un vendedor
-Venta.belongsTo(Usuario, { foreignKey: 'id_usuario_comprador', as: 'comprador' }); // Una venta puede tener un comprador
+Venta.belongsTo(Carta, { foreignKey: 'id_carta', as: "carta" });
+Venta.belongsTo(Usuario, { foreignKey: 'id_usuario_vendedor', as: 'vendedor' });
+Venta.belongsTo(Usuario, { foreignKey: 'id_usuario_comprador', as: 'comprador' });
 
 module.exports = Venta;

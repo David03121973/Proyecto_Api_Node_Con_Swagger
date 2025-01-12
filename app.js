@@ -6,6 +6,7 @@ const logger = require("./helpers/logger.js")
 const sequelize = require("./helpers/database.js");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+require('dotenv').config();
 
 const Usuario = require("./models/usuario.js")
 const Resenna = require("./models/resenna.js")
@@ -17,6 +18,7 @@ const usuarioRoutes = require("./routes/usuarioRouts.js");
 const resennaRouts = require("./routes/resennaRouts.js");
 const cartaRouts = require("./routes/cartaRouts.js");
 const ventaRouts = require("./routes/ventaRouts.js");
+const authenticate = require("./helpers/authenticate.js");
 
 const app = express();
 
@@ -31,7 +33,7 @@ app.use((req, res, next) => {
 
 // Configuración de CORS
 const corsOptions = {
-  origin: 'http://localhost:5000', // Permitir solo solicitudes desde este origen
+  origin: 'http://localhost:3000', // Permitir solo solicitudes desde este origen
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
 };
@@ -78,7 +80,7 @@ const startApp = async () => {
   try {
     await sequelize.sync({ force: false });
     console.log("Tablas sincronizadas.");
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });

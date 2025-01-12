@@ -1,5 +1,7 @@
 // controllers/usuarioController.js
-
+/* global process */
+const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
 const usuarioService = require('../services/usuarioService');
 /**
  * Obtener todos los usuarios
@@ -54,27 +56,15 @@ const createUsuario = async (req, res) => {
         });
     }
 
-    // Verificar si el nombre de usuario ya existe
-    const exists = await usuarioService.usuarioExists(nombre_usuario);
-    if (exists) {
-        return res.status(400).json({
-            message: "El nombre de usuario ya está en uso.",
-        });
-    }
-    // Verificar si el correo electrónico ya existe
-    const emailExists = await usuarioService.emailExists(email);
-    if (emailExists) {
-        return res.status(400).json({
-            message: "El correo electrónico ya está en uso.",
-        });
-    }
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(contrasenna, 10);
 
     const usuarioData = {
         nombre_usuario,
         email,
-        contrasenna
+        contrasenna: hashedPassword
     };
-    
+
     try {
         // Aquí iría la lógica para crear el usuario
         const newUsuario = await usuarioService.createUsuario(usuarioData);
@@ -91,54 +81,54 @@ const createUsuario = async (req, res) => {
  * Actualizar un usuario
  */
 const updateUsuario = async (req, res) => {
-    const { id } = req.params; // Obtener el ID del usuario desde los parámetros
-    const { nombre_usuario, email, contrasenna } = req.body; // Obtener los datos a actualizar desde el cuerpo de la solicitud
-
-    // Validar campos
-    if (!nombre_usuario || !email || !contrasenna) {
-        return res.status(400).json({ message: "El nombre_usuario, email, o contrasenna no pueden ser nulos" });
+    const { id } = req.params;
+    const { nombre_usuario, email, contrasenna } = req.body;
+  
+    // Validar que se proporcione al menos un campo para actualizar
+    if (!nombre_usuario && !email && !contrasenna) {
+      return res.status(400).json({ message: "Se debe proporcionar al menos un campo para actualizar." });
     }
-
+  
     try {
-        // Verificar si el usuario existe
-        const usuarioData = await usuarioService.getUsuarioById(id);
-        if (!usuarioData) {
-            return res.status(404).json({ message: "No se ha encontrado el usuario con el id pasado por parámetros." });
-        }
-
-        // Verificar si el nombre de usuario ya existe (excluyendo el usuario actual)
-        const userExists = await usuarioService.usuarioExists(nombre_usuario);
-        if (userExists && usuarioData.nombre_usuario !== nombre_usuario) {
-            return res.status(400).json({ message: "El nombre de usuario ya está en uso." });
-        }
-
-        // Verificar si el correo electrónico ya existe (excluyendo el usuario actual)
-        const emailExists = await usuarioService.emailExists(email);
-        if (emailExists && usuarioData.email !== email) {
-            return res.status(400).json({ message: "El correo electrónico ya está en uso." });
-        }
-
-        // Preparar los datos para la actualización
-        const dataToUpdate = {
-            nombre_usuario,
-            email,
-            contrasenna
-        };
-
-        // Actualizar el usuario
-        const updatedUsuario = await usuarioService.updateUsuario(id, dataToUpdate);
-        if (!updatedUsuario) {
-            return res.status(500).json({ message: "No se pudo actualizar el usuario. Verifique los datos." });
-        }
-
-        // Obtener el usuario actualizado
-        const updatedUser  = await usuarioService.getUsuarioById(id);
-        return res.status(200).json(updatedUser );
+      // Verificar si el usuario existe
+      const usuario = await usuarioService.getUsuarioById(id);
+      if (!usuario) {
+        return res.status(404).json({ message: "Usuario no encontrado." });
+      }
+  
+      // Preparar los datos para la actualización
+      const updatedUserData = {};
+  
+      // Actualizar el nombre de usuario si se proporciona
+      if (nombre_usuario) {
+        updatedUserData.nombre_usuario = nombre_usuario;
+      }
+  
+      // Actualizar el email si se proporciona
+      if (email) {
+        updatedUserData.email = email;
+      }
+  
+      // Actualizar la contraseña si se proporciona
+      if (contrasenna) {
+        const hashedPassword = await bcrypt.hash(contrasenna, 10);
+        updatedUserData.contrasenna = hashedPassword;
+      }
+  
+      // Actualizar el usuario
+      const updatedUsuario = await usuarioService.updateUsuario(id, updatedUserData);
+      if (!updatedUsuario) {
+        return res.status(500).json({ message: "No se pudo actualizar el usuario. Verifique los datos." });
+      }
+  
+      // Obtener el usuario actualizado
+      const updatedUser  = await usuarioService.getUsuarioById(id);
+      return res.status(200).json(updatedUser );
     } catch (error) {
-        console.error("Error al actualizar el usuario:", error);
-        return res.status(500).json({ message: "Error al actualizar el usuario", error });
+      console.error("Error al actualizar el usuario:", error);
+      return res.status(500).json({ message: "Error al actualizar el usuario", error });
     }
-};
+  };
 
 /**
  * Eliminar un usuario
@@ -158,10 +148,41 @@ const deleteUsuario = async (req, res) => {
     }
 };
 
+const login = async (req, res) => {
+    const { nombre_usuario, contrasenna } = req.body;
+  
+    try {
+      const usuario = await usuarioService.getUsuarioByNombreUsuario(nombre_usuario);
+      if (!usuario) {
+        return res.status(404).json({ message: "No se ha encontrado el usuario con el nombre de usuario pasado por parámetros." });
+      }
+  
+      const isValidPassword = await bcrypt.compare(contrasenna, usuario.contrasenna);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Contraseña incorrecta" });
+      }
+  
+      const token = jwt.sign({ userId: usuario.id_usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const respuesta = {
+        usuario: {
+          id_usuario: usuario.id_usuario,
+          nombre_usuario: usuario.nombre_usuario,
+          email: usuario.email
+        },
+        token
+      };
+      return res.status(200).json(respuesta);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      return res.status(500).json({ message: "Error al iniciar sesión", error });
+    }
+  };
+
 module.exports = {
     getUsuarios,
     getUsuarioById,
     createUsuario,
     updateUsuario,
     deleteUsuario,
+    login
 };
